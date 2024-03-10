@@ -1,15 +1,14 @@
 import numpy as np
 
-
 def create_structure(boundary_matrix, points_matrix, linking_probability):
     """
     生成結構矩陣。
-
+    
     參數：
     boundary_matrix: 三維矩陣，代表外殼，有材料的部分是1，其他空的地方是0。
     points_matrix: 三維矩陣，代表內部的一些點，有點的位置是1，無點的位置是0。
     linking_probability: 介於0～100的正實數，代表任兩個內部點鍵結的機率。
-
+    
     返回：
     三維矩陣，結構矩陣，元素只有0或1。
     """
@@ -23,8 +22,7 @@ def create_structure(boundary_matrix, points_matrix, linking_probability):
 
     # 遍歷內部點，同時確保內部點不在邊界外
     internal_points_indices = np.argwhere(points_matrix == 1)
-    structure[internal_points_indices[:, 0],
-              internal_points_indices[:, 1], internal_points_indices[:, 2]] = 1
+    structure[internal_points_indices[:, 0], internal_points_indices[:, 1], internal_points_indices[:, 2]] = 1
 
     # 建立內部點之間的隨機鏈結
     for i in range(len(internal_points_indices)):
@@ -33,17 +31,15 @@ def create_structure(boundary_matrix, points_matrix, linking_probability):
 
             # 隨機生成鍵結機率
             link_probability = np.random.randint(0, 101)
-            if link_probability < linking_probability:
+            if link_probability > linking_probability:
                 # 使用 Bresenham3D 來連接內部點
                 line_structure = bresenham_3d(*point1, *point2)
-                structure[line_structure[:, 0],
-                          line_structure[:, 1], line_structure[:, 2]] = 1
+                structure[line_structure[:, 0], line_structure[:, 1], line_structure[:, 2]] = 1
 
     # 轉換為整數類型
     structure = structure.astype(int)
 
     return structure
-
 
 def bresenham_3d(x1, y1, z1, x2, y2, z2):
     ListOfPoints = []
@@ -51,7 +47,7 @@ def bresenham_3d(x1, y1, z1, x2, y2, z2):
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
     dz = abs(z2 - z1)
-
+    
     if (x2 > x1):
         xs = 1
     else:
@@ -69,7 +65,7 @@ def bresenham_3d(x1, y1, z1, x2, y2, z2):
     line_points = []
 
     # Driving axis is X-axis"
-    if (dx >= dy and dx >= dz):
+    if (dx >= dy and dx >= dz):     
         p1 = 2 * dy - dx
         p2 = 2 * dz - dx
         while (x1 != x2):
@@ -85,7 +81,7 @@ def bresenham_3d(x1, y1, z1, x2, y2, z2):
             line_points.append((x1, y1, z1))
 
     # Driving axis is Y-axis"
-    elif (dy >= dx and dy >= dz):
+    elif (dy >= dx and dy >= dz):     
         p1 = 2 * dx - dy
         p2 = 2 * dz - dy
         while (y1 != y2):
@@ -101,7 +97,7 @@ def bresenham_3d(x1, y1, z1, x2, y2, z2):
             line_points.append((x1, y1, z1))
 
     # Driving axis is Z-axis"
-    else:
+    else:     
         p1 = 2 * dy - dz
         p2 = 2 * dx - dz
         while (z1 != z2):
@@ -121,15 +117,13 @@ def bresenham_3d(x1, y1, z1, x2, y2, z2):
 
     return line_points
 
-
 # 測試程式
 structure_size = 10  # 調整大小
 boundary_matrix = np.ones((structure_size, structure_size, structure_size))
 boundary_matrix[1:structure_size-1, 1:structure_size-1, 1:structure_size-1] = 0
 
 NUM_POINTS = 25
-points_matrix = np.zeros(
-    (structure_size, structure_size, structure_size), dtype=int)
+points_matrix = np.zeros((structure_size, structure_size, structure_size), dtype=int)
 
 for _ in range(NUM_POINTS):
     while True:
@@ -138,9 +132,8 @@ for _ in range(NUM_POINTS):
             points_matrix[x, y, z] = 1
             break
 
-linking_probability = 0
+linking_probability = 50
 
-structure = create_structure(
-    boundary_matrix, points_matrix, linking_probability)
+structure = create_structure(boundary_matrix, points_matrix, linking_probability)
 print("Generated Structure Matrix:")
 print(structure)
